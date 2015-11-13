@@ -43,5 +43,6 @@ typedef struct chip8_mem_t {
 } chip8_mem;
 
 chip8_mem* get_chip8_mem();
+void load_program(chip8_mem*, char*);
 
 #endif // MEMORY_H_

@@ -10,7 +10,7 @@ OBJS=main.o memory.o cpu.o
 
 all: chip8
 
-%.o: %.c
+%.o: %.c %.h
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 

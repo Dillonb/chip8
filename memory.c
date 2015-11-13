@@ -2,6 +2,8 @@
 #include <string.h>
 #include "memory.h"
 
+#define MAX_PROGRAM_SIZE 3583
+
 chip8_mem* get_chip8_mem() {
     chip8_mem* mem = malloc(sizeof(chip8_mem));
 
@@ -44,7 +46,7 @@ chip8_mem* get_chip8_mem() {
     mem->ST = 0;
 
     // System registers
-    mem->PC = 0;
+    mem->PC = 0x200;
     mem->SP = 0;
 
     //Stack
@@ -53,4 +55,14 @@ chip8_mem* get_chip8_mem() {
     }
 
     return mem;
+}
+
+void load_program(chip8_mem* mem, char* filename) {
+    FILE* file_ptr;
+    file_ptr = fopen(filename, "rb");
+    if (!file_ptr) {
+        printf("Failed to load program.\n");
+        return;
+    }
+    fread(&(mem->main[0x200]), 1, MAX_PROGRAM_SIZE, file_ptr);
 }

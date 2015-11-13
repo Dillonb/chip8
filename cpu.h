@@ -1,6 +1,7 @@
 #ifndef CPU_H_
 #define CPU_H_
 #include <stdint.h>
+#include "memory.h"
 
 typedef enum chip8_instruction_name_t {
     CLS,
@@ -43,12 +44,16 @@ typedef enum chip8_instruction_name_t {
 } chip8_instruction_name;
 
 typedef struct chip8_instruction_t {
-    int16_t command;
+    uint16_t command;
     chip8_instruction_name name;
 } chip8_instruction;
 
 
-chip8_instruction* get_instruction(int16_t* instr);
-void cpu_tick();
+chip8_instruction* get_instruction(uint16_t* instr);
+void execute_instruction(chip8_mem*, uint16_t* instr);
+void cpu_tick(chip8_mem*);
+uint16_t get_single_nibble(uint16_t*, int);
+uint16_t get_kk(uint16_t*);
+uint16_t get_nnn(uint16_t*);
 
 #endif // CPU_H_
