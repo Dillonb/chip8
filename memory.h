@@ -22,6 +22,10 @@ typedef struct chip8_mem_t {
     // Main registers: V0 - VF
     char V[NUM_REGISTERS];
 
+
+    // I register
+    int16_t I;
+
     // Delay timer
     uint32_t DT;
     // Sound timer

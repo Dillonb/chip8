@@ -44,6 +44,7 @@ typedef enum chip8_instruction_name_t {
 } chip8_instruction_name;
 
 typedef struct chip8_instruction_t {
+    uint16_t filter;
     uint16_t command;
     chip8_instruction_name name;
 } chip8_instruction;
@@ -54,6 +55,9 @@ void execute_instruction(chip8_mem*, uint16_t* instr);
 void cpu_tick(chip8_mem*);
 uint16_t get_single_nibble(uint16_t*, int);
 uint16_t get_kk(uint16_t*);
+uint16_t get_byte(uint16_t*);
 uint16_t get_nnn(uint16_t*);
+uint16_t get_x(uint16_t*);
+uint16_t get_y(uint16_t*);
 
 #endif // CPU_H_

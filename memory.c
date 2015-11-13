@@ -36,6 +36,9 @@ chip8_mem* get_chip8_mem() {
     memcpy(&(mem->main), &default_mem, sizeof(default_mem));
 
 
+    mem->I = 0;
+
+
     // V registers to 0
     for (i = 0; i < NUM_REGISTERS; i++) {
         mem->V[i] = 0x0;
