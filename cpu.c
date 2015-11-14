@@ -294,6 +294,7 @@ uint16_t get_n(uint16_t* instr) {
 void execute_instruction(chip8_mem* mem, uint16_t* instr) {
     chip8_instruction* instruction = get_instruction(instr);
 
+    int i, j;
 #ifdef DEBUG
     printf("PC: %04x\n", mem->PC);
     printf("Instruction: %04x \n", *instr);
@@ -302,8 +303,8 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
         printf("Nibble #%d - %01x\n", i, get_single_nibble(instr, i));
     }
     printf("nnn: %03x\n", get_nnn(instr));
+    getchar();
 #endif // DEBUG
-    int i, j;
     mem->draw = 0;
 
     int temp; // Used for some instructions
@@ -363,8 +364,8 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
 
         case LD_Vx_byte:
             // Set Vx = kk
-            mem->V[get_single_nibble(instr, 1)] = get_kk(instr);
-            /*printf("Setting V%01x to %02x.\n", get_x(instr), get_kk(instr));*/
+            mem->V[get_x(instr)] = get_kk(instr);
+            /*printf("Setting V%x to %x.\n", get_x(instr), get_kk(instr));*/
             break;
 
         case ADD_Vx_byte:
@@ -395,8 +396,8 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
         case ADD_Vx_Vy:
             // Vx = Vx + Vy, VF = Carry
             temp = mem->V[get_x(instr)] + mem->V[get_y(instr)];
-            mem->V[0xF] = temp > 255 ? 1 : 0;
-            mem->V[get_x(instr)] = (unsigned char)(temp & 0x0000000F);
+            mem->V[0xF] = (temp > 255 ? 1 : 0);
+            mem->V[get_x(instr)] = (unsigned char)(temp & 0x000000FF);
             break;
 
         case SUB_Vx_Vy:
@@ -455,8 +456,15 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
             // Display n byte sprite starting at memory location I at (Vx, Vy) set VF = collision.
             // XOR sprites onto the screen. if any pixels are erased, set VF = 1
             mem->V[0xF] = 0;
+#ifdef DEBUG
+            printf("Drawing a %d-byte sprite onto the screen, starting at (%d, %d)\n", get_n(instr), mem->V[get_x(instr)], mem->V[get_y(instr)]);
+            printf("I: %x\n", mem->I);
+#endif
             for (i = 0; i < get_n(instr); i++) {
                 unsigned char row = mem->main[mem->I + i];
+#ifdef DEBUG
+                printf("Row: %x\n", row);
+#endif
                 int j;
                 for (j = 0; j < 8; j++) {
                     int xcoord = (mem->V[get_x(instr)] + j) % SCREEN_X;
@@ -464,22 +472,25 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
                     if (mem->screen[xcoord][ycoord] == 1) {
                         mem->V[0xF] = 1;
                     }
-                    mem->screen[xcoord][ycoord] ^= (row >> (8-j)) & 0x01;
+                    mem->screen[xcoord][ycoord] ^= (row >> (7-j)) & 0x01;
                 }
             }
+#ifdef DEBUG
+            getchar();
+#endif
             mem->draw = 1;
             break;
 
         case SKP_Vx:
             // Skip next instruction if key with value of Vx is pressed.
-            if (mem->keyboard[get_x(instr)]) {
+            if (mem->keyboard[mem->V[get_x(instr)]]) {
                 mem->PC += 2;
             }
             break;
 
         case SKNP_Vx:
             // Skip next instruction if key with value of Vx is NOT pressed.
-            if (!mem->keyboard[get_x(instr)]) {
+            if (!mem->keyboard[mem->V[get_x(instr)]]) {
                 mem->PC += 2;
             }
             break;
