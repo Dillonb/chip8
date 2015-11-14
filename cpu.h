@@ -43,6 +43,8 @@ typedef enum chip8_instruction_name_t {
     INVALID_INSTRUCTION,
 } chip8_instruction_name;
 
+extern const char* instruction_names[];
+
 typedef struct chip8_instruction_t {
     uint16_t filter;
     uint16_t command;

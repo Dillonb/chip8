@@ -6,10 +6,10 @@
 
 chip8_mem* get_chip8_mem() {
     chip8_mem* mem = malloc(sizeof(chip8_mem));
+    int i, j;
 
     // Initialize memory
     // Main memory to zero
-    int i;
     for (i = 0; i < MEMORY_SIZE; i++) {
         mem->main[i] = 0x0;
     }
@@ -55,6 +55,18 @@ chip8_mem* get_chip8_mem() {
     //Stack
     for (i = 0; i < STACK_SIZE; i++) {
         mem->stack[i] = 0x00;
+    }
+
+    // Screen
+    for (i = 0; i < SCREEN_X; i++) {
+        for (j = 0; j < SCREEN_Y; j++) {
+            mem->screen[i][j] = 0x00;
+        }
+    }
+
+    // Keyboard
+    for (i = 0; i < 0x10; i++) {
+        mem->keyboard[i] = 0x00;
     }
 
     return mem;

@@ -5,7 +5,7 @@ LDFLAGS=-lm
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-OBJS=main.o memory.o cpu.o
+OBJS=main.o memory.o cpu.o display_tty.o
 
 
 all: chip8

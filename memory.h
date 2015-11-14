@@ -18,13 +18,13 @@ typedef struct chip8_mem_t {
      **************************/
 
     // 4KB main system memory
-    char main[MEMORY_SIZE];
+    unsigned char main[MEMORY_SIZE];
     // Main registers: V0 - VF
-    char V[NUM_REGISTERS];
+    unsigned char V[NUM_REGISTERS];
 
 
     // I register
-    int16_t I;
+    uint16_t I;
 
     // Delay timer
     uint32_t DT;
@@ -41,8 +41,15 @@ typedef struct chip8_mem_t {
     uint16_t SP;
 
     // Stack
-    int16_t stack[STACK_SIZE];
+    uint16_t stack[STACK_SIZE];
 
+    // Screen
+    unsigned char screen[SCREEN_X][SCREEN_Y];
+    // Draw flag (to know when to update the screen)
+    int draw;
+
+    // Keyboard (from 0x0 to 0xF)
+    unsigned char keyboard[16];
 
 } chip8_mem;
 
