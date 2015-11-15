@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "memory.h"
 
+// Types
 typedef enum chip8_instruction_name_t {
     CLS,
     RET,
@@ -43,13 +44,15 @@ typedef enum chip8_instruction_name_t {
     INVALID_INSTRUCTION,
 } chip8_instruction_name;
 
-extern const char* instruction_names[];
-
 typedef struct chip8_instruction_t {
     uint16_t filter;
     uint16_t command;
     chip8_instruction_name name;
 } chip8_instruction;
+
+// Constants
+extern chip8_instruction chip8_instructions[];
+extern const char* instruction_names[];
 
 
 chip8_instruction* get_instruction(uint16_t* instr);

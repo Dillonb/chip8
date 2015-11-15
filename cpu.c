@@ -214,6 +214,7 @@ chip8_instruction chip8_instructions[] = {
         INVALID_INSTRUCTION
     }
 };
+
 const char* instruction_names[] = {
     "CLS",
     "RET",
@@ -269,24 +270,31 @@ uint16_t get_single_nibble(uint16_t* instr, int nibblenum) {
     nibblenum = 3 - nibblenum;
     return (num >> 4*nibblenum) & 0xF;
 }
+
 uint16_t get_kk(uint16_t* instr) {
     return get_single_nibble(instr, 3) | (get_single_nibble(instr, 2) << 4);
 }
+
 uint16_t get_byte(uint16_t* instr) {
     return get_kk(instr);
 }
+
 uint16_t get_nnn(uint16_t* instr) {
     return get_kk(instr) | (get_single_nibble(instr, 1) << 8);
 }
+
 uint16_t get_addr(uint16_t* instr) {
     return get_nnn(instr);
 }
+
 uint16_t get_x(uint16_t* instr) {
     return get_single_nibble(instr, 1);
 }
+
 uint16_t get_y(uint16_t* instr) {
     return get_single_nibble(instr, 2);
 }
+
 uint16_t get_n(uint16_t* instr) {
     return get_single_nibble(instr, 3);
 }
@@ -569,25 +577,8 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
 }
 
 chip8_instruction* get_instruction(uint16_t* instr) {
-    int displayThingy = 0;
-    if ((*instr & 0xF0FF) == 0xE09E) {
-        printf("The thing!\n");
-        displayThingy = 1;
-    }
-    if ((*instr & 0xF0FF) == 0xE0A1) {
-        printf("The other thing!\n");
-        displayThingy = 1;
-    }
-    if ((*instr & 0xF0FF) == 0xF00A) {
-        printf("The third thing!\n");
-        displayThingy = 1;
-    }
     int i;
     for (i = 0; i < sizeof(chip8_instructions) / sizeof(chip8_instruction); i++) {
-        if (displayThingy) {
-            printf("%04x & %04x\n", *instr, chip8_instructions[i].filter);
-            printf("%04x == %04x\n", (*instr & chip8_instructions[i].filter), chip8_instructions[i].command);
-        }
         if ((*instr & chip8_instructions[i].filter) == chip8_instructions[i].command) {
             return &chip8_instructions[i];
         }
