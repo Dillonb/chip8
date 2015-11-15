@@ -483,12 +483,14 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
 
         case SKP_Vx:
             // Skip next instruction if key with value of Vx is pressed.
+            printf("SKP_Vx\n");
             if (mem->keyboard[mem->V[get_x(instr)]]) {
                 mem->PC += 2;
             }
             break;
 
         case SKNP_Vx:
+            printf("SKNP_Vx\n");
             // Skip next instruction if key with value of Vx is NOT pressed.
             if (!mem->keyboard[mem->V[get_x(instr)]]) {
                 mem->PC += 2;
@@ -564,14 +566,28 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
     }
     printf("I = %x\n", mem->I);
 #endif
-    usleep(1000);
 }
 
 chip8_instruction* get_instruction(uint16_t* instr) {
+    int displayThingy = 0;
+    if ((*instr & 0xF0FF) == 0xE09E) {
+        printf("The thing!\n");
+        displayThingy = 1;
+    }
+    if ((*instr & 0xF0FF) == 0xE0A1) {
+        printf("The other thing!\n");
+        displayThingy = 1;
+    }
+    if ((*instr & 0xF0FF) == 0xF00A) {
+        printf("The third thing!\n");
+        displayThingy = 1;
+    }
     int i;
     for (i = 0; i < sizeof(chip8_instructions) / sizeof(chip8_instruction); i++) {
-        /*printf("%04x & %04x\n", *instr, chip8_instructions[i].filter);*/
-        /*printf("%04x == %04x\n", (*instr & chip8_instructions[i].filter), chip8_instructions[i].command);*/
+        if (displayThingy) {
+            printf("%04x & %04x\n", *instr, chip8_instructions[i].filter);
+            printf("%04x == %04x\n", (*instr & chip8_instructions[i].filter), chip8_instructions[i].command);
+        }
         if ((*instr & chip8_instructions[i].filter) == chip8_instructions[i].command) {
             return &chip8_instructions[i];
         }
