@@ -1,6 +1,6 @@
 CC=clang
-CFLAGS=-Wall
-LDFLAGS=-lm -lSDL2
+CFLAGS=-Wall -I/usr/local/include
+LDFLAGS=-lm -lSDL2 -L/usr/local/lib
 TESTLDFLAGS=-lcmocka
 DEPS=memory.h cpu.h display_tty.h display_sdl.h
 
@@ -14,6 +14,7 @@ all: chip8
 
 test: $(TESTOBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(TESTLDFLAGS)
+	./test
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
