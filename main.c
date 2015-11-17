@@ -16,12 +16,14 @@ int main(int argc, char** argv) {
 
     init_display_sdl();
 
-    for (;;) {
+    while (!should_quit_sdl()) {
+        pre_tick_sdl();
         cpu_tick(mem);
+        post_tick_sdl();
         update_keyboard_sdl(mem);
-        /*if (mem->draw) {*/
+        if (should_draw_sdl()) {
             draw_sdl(mem);
-        /*}*/
+        }
     }
     cleanup_display_sdl();
     return 0;

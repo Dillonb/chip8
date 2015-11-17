@@ -23,3 +23,6 @@ chip8: $(OBJS)
 
 clean:
 	rm -fv *.o *~ chip8 test
+
+run: clean all
+	./chip8 games/Space\ Invaders\ \[David\ Winter\].ch8

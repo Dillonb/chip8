@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
+
 #include "cpu.h"
 
 chip8_instruction chip8_instructions[] = {
@@ -299,6 +301,9 @@ uint16_t get_n(uint16_t* instr) {
     return get_single_nibble(instr, 3);
 }
 
+unsigned char* temp_keyboard = NULL;
+int blah = 0;
+
 void execute_instruction(chip8_mem* mem, uint16_t* instr) {
     chip8_instruction* instruction = get_instruction(instr);
 
@@ -313,6 +318,7 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
     printf("nnn: %03x\n", get_nnn(instr));
     getchar();
 #endif // DEBUG
+    /*printf("%s\n", instruction_names[instruction->name]);*/
     mem->draw = 0;
 
     int temp; // Used for some instructions
@@ -323,15 +329,17 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
             // Clear display
             for (i = 0; i < SCREEN_X; i++) {
                 for (j = 0; j < SCREEN_Y; j++) {
-                    mem->screen[i][j] = 0;
+                    mem->drw_screen[i][j] = 0;
                 }
             }
+            mem->draw = 1;
             break;
 
         case RET:
             // Return from subroutine
-            mem->PC = mem->stack[mem->SP];
+            /*printf("Returning from 0x%x to 0x%x, SP=%d\n", mem->PC, mem->stack[mem->SP], mem->SP);*/
             mem->SP--;
+            mem->PC = mem->stack[mem->SP];
             increment_pc = 0;
             break;
 
@@ -343,8 +351,9 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
 
         case CALL_addr:
             // Call subroutine at addr. Push current location to stack, set PC to addr.
-            mem->SP++;
+            /*printf("Jumping to 0x%x from 0x%x, SP=%d\n", get_nnn(instr), mem->PC, mem->SP);*/
             mem->stack[mem->SP] = mem->PC;
+            mem->SP++;
             mem->PC = get_nnn(instr);
             increment_pc = 0;
             break;
@@ -477,10 +486,10 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
                 for (j = 0; j < 8; j++) {
                     int xcoord = (mem->V[get_x(instr)] + j) % SCREEN_X;
                     int ycoord = mem->V[get_y(instr)] + i;
-                    if (mem->screen[xcoord][ycoord] == 1) {
+                    if (mem->drw_screen[xcoord][ycoord] == 1) {
                         mem->V[0xF] = 1;
                     }
-                    mem->screen[xcoord][ycoord] ^= (row >> (7-j)) & 0x01;
+                    mem->drw_screen[xcoord][ycoord] ^= (row >> (7-j)) & 0x01;
                 }
             }
 #ifdef DEBUG
@@ -491,14 +500,14 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
 
         case SKP_Vx:
             // Skip next instruction if key with value of Vx is pressed.
-            printf("SKP_Vx\n");
+            /*printf("SKP_Vx\n");*/
             if (mem->keyboard[mem->V[get_x(instr)]]) {
                 mem->PC += 2;
             }
             break;
 
         case SKNP_Vx:
-            printf("SKNP_Vx\n");
+            /*printf("SKNP_Vx, x=%x, Vx=%x, keyboard[Vx]=%x\n", get_x(instr), mem->V[get_x(instr)], mem->keyboard[mem->V[get_x(instr)]]);*/
             // Skip next instruction if key with value of Vx is NOT pressed.
             if (!mem->keyboard[mem->V[get_x(instr)]]) {
                 mem->PC += 2;
@@ -512,9 +521,34 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
 
         case LD_Vx_K:
             // Wait for a key press, store the value of the key in Vx
-            // TODO
-            printf("TODO: LD_Vx_K\n");
-            increment_pc = 0;
+
+            if (temp_keyboard == NULL) {
+                temp_keyboard = malloc(sizeof(unsigned char) * 0x10);
+                memcpy(temp_keyboard, &(mem->keyboard), sizeof(mem->keyboard));
+            }
+
+            int success = 0;
+
+            if (!blah) {
+                printf("Waiting for a key press\n");
+                blah = 1;
+            }
+
+            for (i = 0; i < 0x10; i++) {
+                if (!mem->keyboard[i] && temp_keyboard[i]) {
+                    printf("Pressed %x\n", i);
+                    mem->V[get_x(instr)] = i;
+                    success = 1;
+                    blah = 0;
+                    break;
+                }
+            }
+
+            memcpy(temp_keyboard, &(mem->keyboard), sizeof(mem->keyboard));
+
+            if (!success) {
+                increment_pc = 0;
+            }
             break;
 
         case LD_DT_Vx:
@@ -567,6 +601,10 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
     }
     if (increment_pc) {
         mem->PC += 2;
+    }
+    if (mem->draw) {
+        memcpy(&mem->screen, &mem->drw_screen, sizeof(mem->screen));
+        mem->draw = 0;
     }
 #ifdef DEBUG
     for (i = 0; i < 0x10; i++) {

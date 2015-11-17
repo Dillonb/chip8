@@ -61,6 +61,7 @@ chip8_mem* get_chip8_mem() {
     for (i = 0; i < SCREEN_X; i++) {
         for (j = 0; j < SCREEN_Y; j++) {
             mem->screen[i][j] = 0x00;
+            mem->drw_screen[i][j] = 0x00;
         }
     }
 

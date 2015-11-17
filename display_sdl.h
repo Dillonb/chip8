@@ -8,11 +8,17 @@
 #define SDL_SCREEN_X SCREEN_X * SCREEN_X_SCALE_FACTOR
 #define SDL_SCREEN_Y SCREEN_Y * SCREEN_Y_SCALE_FACTOR
 
+#define SDL_FPS 30
+#define SDL_TICKS_PER_FRAME 1000 / SDL_FPS
+
 
 void init_display_sdl();
+int should_quit_sdl();
 void update_keyboard_sdl(chip8_mem*);
 void draw_sdl(chip8_mem*);
 void cleanup_display_sdl();
+void pre_tick_sdl();
+void post_tick_sdl();
 
 extern SDL_Window* screen;
 

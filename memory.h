@@ -44,6 +44,9 @@ typedef struct chip8_mem_t {
     uint16_t stack[STACK_SIZE];
 
     // Screen
+    // Temporary screen object. Code draws on this.
+    unsigned char drw_screen[SCREEN_X][SCREEN_Y];
+    // Real screen object. Temp object flipped here when draw flag set.
     unsigned char screen[SCREEN_X][SCREEN_Y];
     // Draw flag (to know when to update the screen)
     int draw;

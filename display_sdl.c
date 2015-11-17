@@ -1,4 +1,5 @@
 #include "display_sdl.h"
+#include <sys/time.h>
 
 SDL_Window* screen;
 SDL_Renderer* renderer;
@@ -16,11 +17,22 @@ void init_display_sdl() {
         SDL_SCREEN_Y);
 }
 
+int shouldQuit = 0;
+
+int should_quit_sdl() {
+    return shouldQuit;
+}
+
 void update_keyboard_sdl(chip8_mem* mem) {
 
     SDL_PumpEvents();
 
     const Uint8* state = SDL_GetKeyboardState(NULL);
+
+    if (state[SDL_SCANCODE_ESCAPE]) {
+        SDL_Quit();
+        shouldQuit = 1;
+    }
 
     mem->keyboard[0x0] = state[SDL_SCANCODE_1];
     mem->keyboard[0x1] = state[SDL_SCANCODE_2];
@@ -64,6 +76,28 @@ void draw_sdl(chip8_mem* mem) {
 
     SDL_RenderPresent(renderer);
 }
+
+long long startTime = 0;
+long long endTime = 0;
+long long elapsedTime = 0;
+struct timeval tv;
+
+void pre_tick_sdl() {
+    gettimeofday(&tv, NULL);
+    startTime = tv.tv_sec * 1000LL + tv.tv_usec / 1000;
+}
+
+long long timeSince(long long startTime) {
+    gettimeofday(&tv, NULL);
+    long long temp = tv.tv_sec * 1000LL + tv.tv_usec / 1000;
+    return temp - startTime;
+}
+
+void post_tick_sdl() {
+    gettimeofday(&tv, NULL);
+    endTime = timeSince(startTime);
+}
+
 
 void cleanup_display_sdl() {
     SDL_Quit();
