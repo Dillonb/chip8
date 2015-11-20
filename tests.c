@@ -46,35 +46,76 @@ static void test_JP_addr(void** state) {
 }
 
 static void test_CALL_addr(void** state) {
+    chip8_mem* mem = *state;
     chip8_instruction* instr_obj = &chip8_instructions[3];
     uint16_t instr = 0x2abc;
     chip8_instruction* selected_instruction = get_instruction(&instr);
+
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->PC, 0xabc);
+    assert_int_equal(mem->SP, 1);
+    assert_int_equal(mem->stack[0], 0x200);
+
 
     assert_memory_equal(instr_obj, selected_instruction, sizeof(chip8_instruction));
 }
 
 static void test_SE_Vx_byte(void** state) {
+    chip8_mem* mem = *state;
     chip8_instruction* instr_obj = &chip8_instructions[4];
     uint16_t instr = 0x3abc;
+    mem->V[0xa] = 0xbc;
     chip8_instruction* selected_instruction = get_instruction(&instr);
+
+
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->PC, 0x204);
+
+    mem->V[0xa] = 0xFF;
+    mem->PC = 0x200;
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->PC, 0x202);
 
     assert_memory_equal(instr_obj, selected_instruction, sizeof(chip8_instruction));
 }
 
 static void test_SNE_Vx_byte(void** state) {
+    chip8_mem* mem = *state;
     chip8_instruction* instr_obj = &chip8_instructions[5];
     uint16_t instr = 0x4abc;
     chip8_instruction* selected_instruction = get_instruction(&instr);
 
     assert_memory_equal(instr_obj, selected_instruction, sizeof(chip8_instruction));
+    mem->V[0xa] = 0xFF;
+    mem->PC = 0x200;
+    execute_instruction(mem, &instr);
+
+    assert_int_equal(mem->PC, 0x204);
+
+    mem->V[0xa] = 0xbc;
+    mem->PC = 0x200;
+    execute_instruction(mem, &instr);
+
+    assert_int_equal(mem->PC, 0x202);
 }
 
 static void test_SE_Vx_Vy(void** state) {
     chip8_instruction* instr_obj = &chip8_instructions[6];
-    uint16_t instr = 0x5abc;
+    uint16_t instr = 0x5ab0;
     chip8_instruction* selected_instruction = get_instruction(&instr);
-
     assert_memory_equal(instr_obj, selected_instruction, sizeof(chip8_instruction));
+
+    chip8_mem* mem = *state;
+    mem->V[0xa] = 0xFF;
+    mem->V[0xb] = 0xFF;
+    mem->PC = 0x200;
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->PC, 0x204);
+    mem->V[0xa] = 0x00;
+    mem->V[0xb] = 0xFF;
+    mem->PC = 0x200;
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->PC, 0x202);
 }
 
 static void test_LD_Vx_byte(void** state) {
@@ -83,6 +124,10 @@ static void test_LD_Vx_byte(void** state) {
     chip8_instruction* selected_instruction = get_instruction(&instr);
 
     assert_memory_equal(instr_obj, selected_instruction, sizeof(chip8_instruction));
+
+    chip8_mem* mem = *state;
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->V[0xa], 0xbc);
 }
 
 static void test_ADD_Vx_byte(void** state) {
@@ -91,6 +136,13 @@ static void test_ADD_Vx_byte(void** state) {
     chip8_instruction* selected_instruction = get_instruction(&instr);
 
     assert_memory_equal(instr_obj, selected_instruction, sizeof(chip8_instruction));
+    chip8_mem* mem = *state;
+    mem->V[0xa] = 0x00;
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->V[0xa], 0xbc);
+    mem->V[0xa] = 0xFF;
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->V[0xa], (unsigned char)(0xbc + 0xFF));
 }
 
 static void test_LD_Vx_Vy(void** state) {
@@ -99,6 +151,11 @@ static void test_LD_Vx_Vy(void** state) {
     chip8_instruction* selected_instruction = get_instruction(&instr);
 
     assert_memory_equal(instr_obj, selected_instruction, sizeof(chip8_instruction));
+
+    chip8_mem* mem = *state;
+    mem->V[0xb] = 0x12;
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->V[0xa], 0x12);
 }
 
 static void test_OR_Vx_Vy(void** state) {
@@ -107,6 +164,12 @@ static void test_OR_Vx_Vy(void** state) {
     chip8_instruction* selected_instruction = get_instruction(&instr);
 
     assert_memory_equal(instr_obj, selected_instruction, sizeof(chip8_instruction));
+
+    chip8_mem* mem = *state;
+    mem->V[0xa] = 0x12;
+    mem->V[0xb] = 0x21;
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->V[0xa], 0x12 | 0x21);
 }
 
 static void test_AND_Vx_Vy(void** state) {
@@ -115,6 +178,11 @@ static void test_AND_Vx_Vy(void** state) {
     chip8_instruction* selected_instruction = get_instruction(&instr);
 
     assert_memory_equal(instr_obj, selected_instruction, sizeof(chip8_instruction));
+    chip8_mem* mem = *state;
+    mem->V[0xa] = 0x12;
+    mem->V[0xb] = 0x21;
+    execute_instruction(mem, &instr);
+    assert_int_equal(mem->V[0xa], 0x12 & 0x21);
 }
 
 static void test_XOR_Vx_Vy(void** state) {

@@ -22,9 +22,7 @@ int main(int argc, char** argv) {
         cpu_tick(mem);
         post_tick_sdl();
         update_keyboard_sdl(mem);
-        if (should_draw_sdl(mem)) {
-            draw_sdl(mem);
-        }
+        draw_sdl(mem);
     }
     cleanup_display_sdl();
     return 0;

@@ -27,9 +27,9 @@ typedef struct chip8_mem_t {
     uint16_t I;
 
     // Delay timer
-    uint32_t DT;
+    unsigned char DT;
     // Sound timer
-    uint32_t ST;
+    unsigned char ST;
 
     /*******************
      * INTERNAL MEMORY *
@@ -38,7 +38,7 @@ typedef struct chip8_mem_t {
     // Program Counter
     uint16_t PC;
     // Stack Pointer
-    uint16_t SP;
+    unsigned char SP;
 
     // Stack
     uint16_t stack[STACK_SIZE];

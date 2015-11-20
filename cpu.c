@@ -44,7 +44,7 @@ chip8_instruction chip8_instructions[] = {
     },
     // SE Vx, Vy
     {
-        0xF000,
+        0xF00F,
         0x5000,
         SE_Vx_Vy
     },
@@ -282,7 +282,7 @@ uint16_t get_byte(uint16_t* instr) {
 }
 
 uint16_t get_nnn(uint16_t* instr) {
-    return get_kk(instr) | (get_single_nibble(instr, 1) << 8);
+    return *instr & 0x0FFF;
 }
 
 uint16_t get_addr(uint16_t* instr) {
@@ -302,6 +302,7 @@ uint16_t get_n(uint16_t* instr) {
 }
 
 unsigned char* temp_keyboard = NULL;
+
 int blah = 0;
 
 void execute_instruction(chip8_mem* mem, uint16_t* instr) {
@@ -352,7 +353,7 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
         case CALL_addr:
             // Call subroutine at addr. Push current location to stack, set PC to addr.
             /*printf("Jumping to 0x%x from 0x%x, SP=%d\n", get_nnn(instr), mem->PC, mem->SP);*/
-            mem->stack[mem->SP] = mem->PC;
+            mem->stack[mem->SP] = mem->PC + 0x2;
             mem->SP++;
             mem->PC = get_nnn(instr);
             increment_pc = 0;
@@ -609,6 +610,10 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
 #ifdef DEBUG
     for (i = 0; i < 0x10; i++) {
         printf("V%x = %x\n", i, mem->V[i]);
+    }
+    printf("SP = %d\n", mem->SP);
+    for (i = 0; i < mem->SP; i++) {
+        printf("S[%d] = %x\n", i, mem->stack[i]);
     }
     printf("I = %x\n", mem->I);
 #endif

@@ -23,11 +23,6 @@ int should_quit_sdl() {
     return shouldQuit;
 }
 
-int should_draw_sdl(chip8_mem* mem) {
-    /*return mem->draw;*/
-    return 1;
-}
-
 void update_keyboard_sdl(chip8_mem* mem) {
 
     SDL_PumpEvents();

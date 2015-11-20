@@ -16,7 +16,6 @@ void init_display_sdl();
 int should_quit_sdl();
 void update_keyboard_sdl(chip8_mem*);
 void draw_sdl(chip8_mem*);
-int should_draw_sdl(chip8_mem*);
 void cleanup_display_sdl();
 void pre_tick_sdl();
 void post_tick_sdl();
