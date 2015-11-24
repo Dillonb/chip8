@@ -2,8 +2,8 @@
 #define DISPLAY_SDL_H_
 #include <SDL2/SDL.h>
 #include "memory.h"
-#define SCREEN_X_SCALE_FACTOR 10
-#define SCREEN_Y_SCALE_FACTOR 10
+#define SCREEN_X_SCALE_FACTOR 20
+#define SCREEN_Y_SCALE_FACTOR 20
 
 #define SDL_SCREEN_X SCREEN_X * SCREEN_X_SCALE_FACTOR
 #define SDL_SCREEN_Y SCREEN_Y * SCREEN_Y_SCALE_FACTOR
@@ -11,6 +11,8 @@
 #define SDL_FPS 30
 #define SDL_TICKS_PER_FRAME 1000 / SDL_FPS
 
+#define EMULATION_SPEED 240
+#define MS_PER_TICK 1000 / EMULATION_SPEED
 
 void init_display_sdl();
 int should_quit_sdl();

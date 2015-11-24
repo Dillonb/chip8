@@ -487,10 +487,11 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
                 for (j = 0; j < 8; j++) {
                     int xcoord = (mem->V[get_x(instr)] + j) % SCREEN_X;
                     int ycoord = mem->V[get_y(instr)] + i;
-                    if (mem->drw_screen[xcoord][ycoord] == 1) {
+                    int px = (row >> (7 - j)) & 0x01;
+                    if (px == 1 && mem->drw_screen[xcoord][ycoord] == 1) {
                         mem->V[0xF] = 1;
                     }
-                    mem->drw_screen[xcoord][ycoord] ^= (row >> (7-j)) & 0x01;
+                    mem->drw_screen[xcoord][ycoord] ^= px;
                 }
             }
 #ifdef DEBUG
