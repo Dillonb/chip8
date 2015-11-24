@@ -3,6 +3,7 @@
 #include "memory.h"
 #include "system.h"
 #include "cpu.h"
+#include "menu.h"
 /*#include "display_tty.h"*/
 #include "display_sdl.h"
 
@@ -12,6 +13,8 @@ int main(int argc, char** argv) {
         return 0;
     }
     chip8_mem* mem = get_chip8_mem();
+
+    get_games();
 
     load_program(mem, argv[1]);
 
