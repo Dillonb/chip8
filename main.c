@@ -12,6 +12,7 @@ int main(int argc, char** argv) {
         return 0;
     }
     chip8_mem* mem = get_chip8_mem();
+    cpu_init();
 
     load_program(mem, argv[1]);
 

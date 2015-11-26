@@ -54,7 +54,7 @@ typedef struct chip8_instruction_t {
 extern chip8_instruction chip8_instructions[];
 extern const char* instruction_names[];
 
-
+void cpu_init();
 chip8_instruction* get_instruction(uint16_t* instr);
 void execute_instruction(chip8_mem*, uint16_t* instr);
 void cpu_tick(chip8_mem*);

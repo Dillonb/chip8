@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 
 #include "cpu.h"
 
@@ -254,6 +255,10 @@ const char* instruction_names[] = {
     "LD_Vx_I",
     "INVALID_INSTRUCTION"
 };
+
+void cpu_init() {
+    srand(time(NULL));
+}
 
 void cpu_tick(chip8_mem* mem) {
     uint16_t instr = mem->main[mem->PC] << 8 | mem->main[mem->PC + 1];
