@@ -33,13 +33,33 @@ void init_display_sdl(char* filename) {
     ssize_t read;
 
     fp = fopen(newfilename, "r");
+    if (fp == NULL) {
+        keymappings[0x0] = SDL_SCANCODE_1;
+        keymappings[0x1] = SDL_SCANCODE_2;
+        keymappings[0x2] = SDL_SCANCODE_3;
+        keymappings[0x3] = SDL_SCANCODE_4;
+        keymappings[0x4] = SDL_SCANCODE_Q;
+        keymappings[0x5] = SDL_SCANCODE_W;
+        keymappings[0x5] = SDL_SCANCODE_E;
+        keymappings[0x6] = SDL_SCANCODE_R;
+        keymappings[0x7] = SDL_SCANCODE_A;
+        keymappings[0x8] = SDL_SCANCODE_S;
+        keymappings[0x9] = SDL_SCANCODE_D;
+        keymappings[0xA] = SDL_SCANCODE_F;
+        keymappings[0xB] = SDL_SCANCODE_Z;
+        keymappings[0xC] = SDL_SCANCODE_X;
+        keymappings[0xD] = SDL_SCANCODE_C;
+        keymappings[0xF] = SDL_SCANCODE_V;
 
-    unsigned char keycode = 0x0;
+    }
+    else {
+        unsigned char keycode = 0x0;
 
-    while ((read = getline(&line, &len, fp)) != -1) {
-        line[strlen(line) - 1] = '\0';
-        keymappings[keycode] = SDL_GetScancodeFromName(line);
-        keycode++;
+        while ((read = getline(&line, &len, fp)) != -1) {
+            line[strlen(line) - 1] = '\0';
+            keymappings[keycode] = SDL_GetScancodeFromName(line);
+            keycode++;
+        }
     }
 
     return;

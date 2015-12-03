@@ -618,9 +618,11 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
         mem->draw = 0;
     }
 #ifdef DEBUG
+    printf("Vx = { ");
     for (i = 0; i < 0x10; i++) {
-        printf("V%x = 0x%x\n", i, mem->V[i]);
+        printf("%x = 0x%x; ", i, mem->V[i]);
     }
+    printf("}\n");
     printf("SP = %d\n", mem->SP);
     for (i = 0; i < mem->SP; i++) {
         printf("S[%d] = %x\n", i, mem->stack[i]);
