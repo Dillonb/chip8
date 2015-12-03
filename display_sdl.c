@@ -1,11 +1,15 @@
 #include "display_sdl.h"
 #include <sys/time.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 SDL_Window* screen;
 SDL_Renderer* renderer;
 SDL_Texture* screen_tex;
 
-void init_display_sdl() {
+SDL_Scancode keymappings[0x10];
+
+void init_display_sdl(char* filename) {
     SDL_Init(SDL_INIT_EVERYTHING);
     screen = SDL_CreateWindow("Chip-8", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             SDL_SCREEN_X, SDL_SCREEN_Y, SDL_WINDOW_OPENGL);
@@ -15,6 +19,31 @@ void init_display_sdl() {
         SDL_TEXTUREACCESS_STREAMING,
         SDL_SCREEN_X,
         SDL_SCREEN_Y);
+
+    size_t len = strlen(filename);
+
+    char *newfilename = malloc(len);
+    memcpy(newfilename, filename, len-3);
+    newfilename[len - 3] = 0;
+    filename = strcat(newfilename, "key");
+    printf("%s\n", filename);
+
+    FILE * fp;
+    char * line = NULL;
+    ssize_t read;
+
+    fp = fopen(newfilename, "r");
+
+    unsigned char keycode = 0x0;
+
+    while ((read = getline(&line, &len, fp)) != -1) {
+        line[strlen(line) - 1] = '\0';
+        keymappings[keycode] = SDL_GetScancodeFromName(line);
+        keycode++;
+    }
+
+    return;
+
 }
 
 int shouldQuit = 0;
@@ -34,22 +63,11 @@ void update_keyboard_sdl(chip8_mem* mem) {
         shouldQuit = 1;
     }
 
-    mem->keyboard[0x0] = state[SDL_SCANCODE_1];
-    mem->keyboard[0x1] = state[SDL_SCANCODE_2];
-    mem->keyboard[0x2] = state[SDL_SCANCODE_3];
-    mem->keyboard[0x3] = state[SDL_SCANCODE_4];
-    mem->keyboard[0x4] = state[SDL_SCANCODE_Q];
-    mem->keyboard[0x5] = state[SDL_SCANCODE_W];
-    mem->keyboard[0x5] = state[SDL_SCANCODE_E];
-    mem->keyboard[0x6] = state[SDL_SCANCODE_R];
-    mem->keyboard[0x7] = state[SDL_SCANCODE_A];
-    mem->keyboard[0x8] = state[SDL_SCANCODE_S];
-    mem->keyboard[0x9] = state[SDL_SCANCODE_D];
-    mem->keyboard[0xA] = state[SDL_SCANCODE_F];
-    mem->keyboard[0xB] = state[SDL_SCANCODE_Z];
-    mem->keyboard[0xC] = state[SDL_SCANCODE_X];
-    mem->keyboard[0xD] = state[SDL_SCANCODE_C];
-    mem->keyboard[0xF] = state[SDL_SCANCODE_V];
+    unsigned char keycode = 0x0;
+
+    for (keycode = 0x0; keycode < 0x10; keycode++) {
+        mem->keyboard[keycode] = state[keymappings[keycode]];
+    }
 
     return;
 }

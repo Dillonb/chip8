@@ -14,7 +14,7 @@
 #define EMULATION_SPEED 120
 #define MS_PER_TICK 1000 / EMULATION_SPEED
 
-void init_display_sdl();
+void init_display_sdl(char*);
 int should_quit_sdl();
 void update_keyboard_sdl(chip8_mem*);
 void draw_sdl(chip8_mem*);

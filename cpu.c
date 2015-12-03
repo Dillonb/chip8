@@ -6,6 +6,8 @@
 
 #include "cpu.h"
 
+#define DEBUG
+
 chip8_instruction chip8_instructions[] = {
     // RET
     {
@@ -315,14 +317,16 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
 
     int i, j;
 #ifdef DEBUG
-    printf("PC: %04x\n", mem->PC);
-    printf("Instruction: %04x \n", *instr);
+    printf("PC: 0x%04x\n", mem->PC);
+    printf("Instruction: 0x%04x \n", *instr);
     printf("Instruction name: %s\n", instruction_names[instruction->name]);
+    /*
     for (i = 0; i < 4; i++) {
         printf("Nibble #%d - %01x\n", i, get_single_nibble(instr, i));
     }
     printf("nnn: %03x\n", get_nnn(instr));
     getchar();
+    */
 #endif // DEBUG
     /*printf("%s\n", instruction_names[instruction->name]);*/
     mem->draw = 0;
@@ -481,12 +485,14 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
             mem->V[0xF] = 0;
 #ifdef DEBUG
             printf("Drawing a %d-byte sprite onto the screen, starting at (%d, %d)\n", get_n(instr), mem->V[get_x(instr)], mem->V[get_y(instr)]);
-            printf("I: %x\n", mem->I);
+            printf("I: 0x%x\n", mem->I);
 #endif
             for (i = 0; i < get_n(instr); i++) {
                 unsigned char row = mem->main[mem->I + i];
 #ifdef DEBUG
+                /*
                 printf("Row: %x\n", row);
+                */
 #endif
                 int j;
                 for (j = 0; j < 8; j++) {
@@ -500,21 +506,19 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
                 }
             }
 #ifdef DEBUG
-            getchar();
+            /*getchar();*/
 #endif
             mem->draw = 1;
             break;
 
         case SKP_Vx:
             // Skip next instruction if key with value of Vx is pressed.
-            /*printf("SKP_Vx\n");*/
             if (mem->keyboard[mem->V[get_x(instr)]]) {
                 mem->PC += 2;
             }
             break;
 
         case SKNP_Vx:
-            /*printf("SKNP_Vx, x=%x, Vx=%x, keyboard[Vx]=%x\n", get_x(instr), mem->V[get_x(instr)], mem->keyboard[mem->V[get_x(instr)]]);*/
             // Skip next instruction if key with value of Vx is NOT pressed.
             if (!mem->keyboard[mem->V[get_x(instr)]]) {
                 mem->PC += 2;
@@ -615,13 +619,13 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
     }
 #ifdef DEBUG
     for (i = 0; i < 0x10; i++) {
-        printf("V%x = %x\n", i, mem->V[i]);
+        printf("V%x = 0x%x\n", i, mem->V[i]);
     }
     printf("SP = %d\n", mem->SP);
     for (i = 0; i < mem->SP; i++) {
         printf("S[%d] = %x\n", i, mem->stack[i]);
     }
-    printf("I = %x\n", mem->I);
+    printf("I = 0x%x\n", mem->I);
 #endif
 }
 
