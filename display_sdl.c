@@ -97,9 +97,9 @@ void post_tick_sdl() {
     gettimeofday(&tv, NULL);
     elapsedTime = timeSince(startTime);
 
+    // Sleep for the remaining time per frame
     if (elapsedTime < MS_PER_TICK) {
         usleep((MS_PER_TICK - elapsedTime) * 1000);
-        printf("Sleeping for %d ms\n", MS_PER_TICK - elapsedTime);
     }
 }
 
