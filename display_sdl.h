@@ -11,7 +11,7 @@
 #define SDL_FPS 30
 #define SDL_TICKS_PER_FRAME 1000 / SDL_FPS
 
-#define EMULATION_SPEED 240
+#define EMULATION_SPEED 120
 #define MS_PER_TICK 1000 / EMULATION_SPEED
 
 void init_display_sdl();

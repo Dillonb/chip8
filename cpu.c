@@ -308,7 +308,7 @@ uint16_t get_n(uint16_t* instr) {
 
 unsigned char* temp_keyboard = NULL;
 
-int blah = 0;
+int waiting_message_output = 0;
 
 void execute_instruction(chip8_mem* mem, uint16_t* instr) {
     chip8_instruction* instruction = get_instruction(instr);
@@ -536,9 +536,9 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
 
             int success = 0;
 
-            if (!blah) {
+            if (!waiting_message_output) {
                 printf("Waiting for a key press\n");
-                blah = 1;
+                waiting_message_output = 1;
             }
 
             for (i = 0; i < 0x10; i++) {
@@ -546,7 +546,7 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
                     printf("Pressed %x\n", i);
                     mem->V[get_x(instr)] = i;
                     success = 1;
-                    blah = 0;
+                    waiting_message_output = 0;
                     break;
                 }
             }
