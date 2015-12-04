@@ -2,10 +2,23 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <SDL2/SDL_ttf.h>
+
+#include "cpu.h"
 
 SDL_Window* screen;
 SDL_Renderer* renderer;
 SDL_Texture* screen_tex;
+
+#ifdef DEBUG
+SDL_Window* status_screen;
+SDL_Renderer* status_renderer;
+SDL_Texture* status_screen_tex;
+TTF_Font* terminus = NULL;
+SDL_Surface* textSurface = NULL;
+SDL_Texture* textTexture = NULL;
+char* statusText;
+#endif // DEBUG
 
 SDL_Scancode keymappings[0x10];
 
@@ -19,6 +32,22 @@ void init_display_sdl(char* filename) {
         SDL_TEXTUREACCESS_STREAMING,
         SDL_SCREEN_X,
         SDL_SCREEN_Y);
+    statusText = malloc(10000);
+#ifdef DEBUG
+    status_screen = SDL_CreateWindow("Status", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+            400, 600, SDL_WINDOW_OPENGL);
+
+    status_renderer = SDL_CreateRenderer(status_screen, -1, SDL_RENDERER_ACCELERATED);
+
+    status_screen_tex = SDL_CreateTexture(status_renderer,
+        SDL_PIXELFORMAT_ARGB8888,
+        SDL_TEXTUREACCESS_STREAMING,
+        SDL_SCREEN_X,
+        SDL_SCREEN_Y);
+    TTF_Init();
+    terminus = TTF_OpenFont( "./fonts/TerminusTTF-4.39.ttf", 20 );
+
+#endif // DEBUG
 
     size_t len = strlen(filename);
 
@@ -113,6 +142,69 @@ void draw_sdl(chip8_mem* mem) {
     }
 
     SDL_RenderPresent(renderer);
+
+#ifdef DEBUG
+    uint16_t instr = mem->main[mem->PC] << 8 | mem->main[mem->PC + 1];
+    chip8_instruction* instruction = get_instruction(&instr);
+
+    SDL_SetRenderDrawColor(status_renderer, 0, 0, 0, 255);
+    SDL_RenderClear(status_renderer);
+    SDL_Color textColor = {255, 255, 255};
+
+    sprintf(statusText, "PC: 0x%x\n"
+            "OPCODE: 0x%04x\n"
+            "Instruction: 0x%s\n"
+            "V0: 0x%x\n"
+            "V1: 0x%x\n"
+            "V2: 0x%x\n"
+            "V3: 0x%x\n"
+            "V4: 0x%x\n"
+            "V5: 0x%x\n"
+            "V6: 0x%x\n"
+            "V7: 0x%x\n"
+            "V8: 0x%x\n"
+            "V9: 0x%x\n"
+            "Va: 0x%x\n"
+            "Vb: 0x%x\n"
+            "Vc: 0x%x\n"
+            "Vd: 0x%x\n"
+            "Ve: 0x%x\n"
+            "Vf: 0x%x\n",
+            mem->PC,
+            instr,
+            instruction_names[instruction->name],
+            mem->V[0x0],
+            mem->V[0x1],
+            mem->V[0x2],
+            mem->V[0x3],
+            mem->V[0x4],
+            mem->V[0x5],
+            mem->V[0x6],
+            mem->V[0x7],
+            mem->V[0x8],
+            mem->V[0x9],
+            mem->V[0xa],
+            mem->V[0xb],
+            mem->V[0xc],
+            mem->V[0xd],
+            mem->V[0xe],
+            mem->V[0xf]
+    );
+    textSurface = TTF_RenderText_Blended_Wrapped(terminus,
+            statusText,
+            textColor, 400);
+    SDL_Rect textRect;
+    SDL_GetClipRect(textSurface, &textRect);
+
+    textTexture = SDL_CreateTextureFromSurface(status_renderer, textSurface);
+
+    SDL_FreeSurface(textSurface);
+    SDL_RenderCopy(status_renderer, textTexture, NULL, NULL);
+    SDL_RenderPresent(status_renderer);
+    SDL_DestroyTexture(textTexture);
+
+
+#endif // DEBUG
 }
 
 long long startTime = 0;

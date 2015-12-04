@@ -2,6 +2,7 @@
 #define CPU_H_
 #include <stdint.h>
 #include "memory.h"
+#include "config.h"
 
 // Types
 typedef enum chip8_instruction_name_t {

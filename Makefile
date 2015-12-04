@@ -1,6 +1,6 @@
-CC=clang
-CFLAGS=-Wall -I/usr/local/include
-LDFLAGS=-lm -lSDL2 -L/usr/local/lib
+CC=gcc
+CFLAGS=-Wall -g -I/usr/local/include
+LDFLAGS=-lm -lSDL2 -lSDL2_ttf -L/usr/local/lib
 TESTLDFLAGS=-lcmocka
 DEPS=memory.h cpu.h display_tty.h display_sdl.h
 

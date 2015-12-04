@@ -6,7 +6,6 @@
 
 #include "cpu.h"
 
-#define DEBUG
 
 chip8_instruction chip8_instructions[] = {
     // RET
@@ -316,19 +315,11 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
     chip8_instruction* instruction = get_instruction(instr);
 
     int i, j;
-#ifdef DEBUG
-    printf("PC: 0x%04x\n", mem->PC);
-    printf("Instruction: 0x%04x \n", *instr);
-    printf("Instruction name: %s\n", instruction_names[instruction->name]);
-    /*
-    for (i = 0; i < 4; i++) {
-        printf("Nibble #%d - %01x\n", i, get_single_nibble(instr, i));
-    }
-    printf("nnn: %03x\n", get_nnn(instr));
+
+#ifdef SINGLE_STEP
     getchar();
-    */
-#endif // DEBUG
-    /*printf("%s\n", instruction_names[instruction->name]);*/
+#endif // SINGLE_STEP
+
     mem->draw = 0;
 
     int temp; // Used for some instructions
@@ -483,7 +474,7 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
             // Display n byte sprite starting at memory location I at (Vx, Vy) set VF = collision.
             // XOR sprites onto the screen. if any pixels are erased, set VF = 1
             mem->V[0xF] = 0;
-#ifdef DEBUG
+#ifdef DEBUGaaa
             printf("Drawing a %d-byte sprite onto the screen, starting at (%d, %d)\n", get_n(instr), mem->V[get_x(instr)], mem->V[get_y(instr)]);
             printf("I: 0x%x\n", mem->I);
 #endif
@@ -617,18 +608,6 @@ void execute_instruction(chip8_mem* mem, uint16_t* instr) {
         memcpy(&mem->screen, &mem->drw_screen, sizeof(mem->screen));
         mem->draw = 0;
     }
-#ifdef DEBUG
-    printf("Vx = { ");
-    for (i = 0; i < 0x10; i++) {
-        printf("%x = 0x%x; ", i, mem->V[i]);
-    }
-    printf("}\n");
-    printf("SP = %d\n", mem->SP);
-    for (i = 0; i < mem->SP; i++) {
-        printf("S[%d] = %x\n", i, mem->stack[i]);
-    }
-    printf("I = 0x%x\n", mem->I);
-#endif
 }
 
 chip8_instruction* get_instruction(uint16_t* instr) {
