@@ -24,7 +24,7 @@ SDL_Scancode keymappings[0x10];
 
 void init_display_sdl(char* filename) {
     SDL_Init(SDL_INIT_EVERYTHING);
-    screen = SDL_CreateWindow("Chip-8", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+    screen = SDL_CreateWindow("Chip-8", 475, SDL_WINDOWPOS_CENTERED,
             SDL_SCREEN_X, SDL_SCREEN_Y, SDL_WINDOW_OPENGL);
     renderer = SDL_CreateRenderer(screen, -1, SDL_RENDERER_ACCELERATED);
     screen_tex = SDL_CreateTexture(renderer,
@@ -34,7 +34,7 @@ void init_display_sdl(char* filename) {
         SDL_SCREEN_Y);
     statusText = malloc(10000);
 #ifdef DEBUG
-    status_screen = SDL_CreateWindow("Status", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+    status_screen = SDL_CreateWindow("Status", 0, SDL_WINDOWPOS_CENTERED,
             400, 600, SDL_WINDOW_OPENGL);
 
     status_renderer = SDL_CreateRenderer(status_screen, -1, SDL_RENDERER_ACCELERATED);
