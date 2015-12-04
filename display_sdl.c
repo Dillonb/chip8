@@ -153,7 +153,7 @@ void draw_sdl(chip8_mem* mem) {
 
     sprintf(statusText, "PC: 0x%x\n"
             "OPCODE: 0x%04x\n"
-            "Instruction: 0x%s\n"
+            "Instruction: %s\n"
             "V0: 0x%x\n"
             "V1: 0x%x\n"
             "V2: 0x%x\n"
