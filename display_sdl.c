@@ -55,7 +55,6 @@ void init_display_sdl(char* filename) {
     memcpy(newfilename, filename, len-3);
     newfilename[len - 3] = 0;
     filename = strcat(newfilename, "key");
-    printf("%s\n", filename);
 
     FILE * fp;
     char * line = NULL;
