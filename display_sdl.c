@@ -169,7 +169,10 @@ void draw_sdl(chip8_mem* mem) {
             "Vc: 0x%x\n"
             "Vd: 0x%x\n"
             "Ve: 0x%x\n"
-            "Vf: 0x%x\n",
+            "Vf: 0x%x\n"
+            "DT: 0x%x\n"
+            "ST: 0x%x\n"
+            "I: 0x%x\n",
             mem->PC,
             instr,
             instruction_names[instruction->name],
@@ -188,8 +191,17 @@ void draw_sdl(chip8_mem* mem) {
             mem->V[0xc],
             mem->V[0xd],
             mem->V[0xe],
-            mem->V[0xf]
+            mem->V[0xf],
+            mem->DT,
+            mem->ST,
+            mem->I
     );
+
+    for (i = 0; i < mem->SP; i++) {
+        sprintf(statusText, "%sS%d: 0x%04x\n", statusText, i, mem->stack[i]);
+    }
+    sprintf(statusText, "%sSP: 0x%x",statusText, mem->SP);
+
     textSurface = TTF_RenderText_Blended_Wrapped(terminus,
             statusText,
             textColor, 400);
@@ -199,7 +211,7 @@ void draw_sdl(chip8_mem* mem) {
     textTexture = SDL_CreateTextureFromSurface(status_renderer, textSurface);
 
     SDL_FreeSurface(textSurface);
-    SDL_RenderCopy(status_renderer, textTexture, NULL, NULL);
+    SDL_RenderCopy(status_renderer, textTexture, &textRect, &textRect);
     SDL_RenderPresent(status_renderer);
     SDL_DestroyTexture(textTexture);
 
@@ -229,7 +241,7 @@ void post_tick_sdl() {
 
     // Sleep for the remaining time per frame
     if (elapsedTime < MS_PER_TICK) {
-        usleep((MS_PER_TICK - elapsedTime) * 1000);
+        SDL_Delay(MS_PER_TICK - elapsedTime);
     }
 }
 
