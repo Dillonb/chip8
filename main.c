@@ -7,18 +7,17 @@
 #include "display_sdl.h"
 #define TRUE 1
 #define FALSE 0
-//int argc, char** argv
-int main(argc) {
+
+int main(int argc, char** argv) {
     int choice = 0; //for switch statement below
-    char* argv; // name of the game file
-    
+    char* gameName; // name of the game file
+
     //Program now has no arguments, game file is specified later
     if (argc != 1) {
         printf("Usage: chip8 [program.ch8]\n");
         return 0;
     }
-    
-    chip8_mem* mem = get_chip8_mem();
+
     cpu_init();
 
     //do/while loop for menu/game selection starts here
@@ -47,35 +46,35 @@ int main(argc) {
             switch (choice) 
             {
 
-                case 1: argv = "games/Tetris.ch8";
+                case 1: gameName = "games/Tetris.ch8";
                     break;
-                case 2: argv = "games/Tank.ch8";
+                case 2: gameName = "games/Tank.ch8";
                     break;
-                case 3: argv = "games/Pong-paul.ch8";
+                case 3: gameName = "games/Pong-paul.ch8";
                     break;
-                case 4: argv = "games/SpaceInvaders.ch8";
+                case 4: gameName = "games/SpaceInvaders.ch8";
                     break;
-                case 5: argv = "games/ConnectFour.ch8";
+                case 5: gameName = "games/ConnectFour.ch8";
                     break;
-                case 6: argv = "demos/Trip8Demo.ch8";
+                case 6: gameName = "demos/Trip8Demo.ch8";
                     break;
-                case 7: argv = "demos/Maze.ch8";
+                case 7: gameName = "demos/Maze.ch8";
                     break;
-                case 8: argv = "demos/Sierpinski.ch8";
+                case 8: gameName = "demos/Sierpinski.ch8";
                     break;
                 case 9: printf("Goodbye\n"); 
                         menu_quit_sdl();  //menu_quit_sdl is in display_sdl and sets shouldQuit = 1
                     break;
                 default: printf("Wrong Choice. Enter again\n");
-                        isValid = FALSE;            
-            }    
+                        isValid = FALSE;
+            }
 
        }
 
         if (!should_quit_sdl() && choice != 9) 
         {
-            load_program(mem, argv);
-            init_display_sdl(argv);
+            load_program(mem, gameName);
+            init_display_sdl(gameName);
         }
 
         while (!should_quit_sdl() && choice != 9) 
@@ -86,7 +85,7 @@ int main(argc) {
             update_keyboard_sdl(mem);
             draw_sdl(mem);
         }
-        
+
         cleanup_display_sdl();
 
         if (choice != 9) //sets choice to undefined unless the exit option is chosen. 

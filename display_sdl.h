@@ -12,6 +12,8 @@ void draw_sdl(chip8_mem*);
 void cleanup_display_sdl();
 void pre_tick_sdl();
 void post_tick_sdl();
+void newGame();
+void menu_quit_sdl();
 
 extern SDL_Window* screen;
 
