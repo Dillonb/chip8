@@ -55,7 +55,6 @@ void init_display_sdl(char* filename) {
     memcpy(newfilename, filename, len-3);
     newfilename[len - 3] = 0;
     filename = strcat(newfilename, "key");
-    printf("%s\n", filename);
 
     FILE * fp;
     char * line = NULL;
@@ -101,6 +100,15 @@ int should_quit_sdl() {
     return shouldQuit;
 }
 
+void menu_quit_sdl() {
+    shouldQuit = 1;
+    return;
+}
+
+void newGame() {
+    shouldQuit = 0;
+}
+
 void update_keyboard_sdl(chip8_mem* mem) {
 
     SDL_PumpEvents();
@@ -110,6 +118,7 @@ void update_keyboard_sdl(chip8_mem* mem) {
     if (state[SDL_SCANCODE_ESCAPE]) {
         SDL_Quit();
         shouldQuit = 1;
+        // menu_quit_sdl();
     }
 
     unsigned char keycode = 0x0;
@@ -169,7 +178,10 @@ void draw_sdl(chip8_mem* mem) {
             "Vc: 0x%x\n"
             "Vd: 0x%x\n"
             "Ve: 0x%x\n"
-            "Vf: 0x%x\n",
+            "Vf: 0x%x\n"
+            "DT: 0x%x\n"
+            "ST: 0x%x\n"
+            "I: 0x%x\n",
             mem->PC,
             instr,
             instruction_names[instruction->name],
@@ -188,8 +200,16 @@ void draw_sdl(chip8_mem* mem) {
             mem->V[0xc],
             mem->V[0xd],
             mem->V[0xe],
-            mem->V[0xf]
+            mem->V[0xf],
+            mem->DT,
+            mem->ST,
+            mem->I
     );
+    for (i = 0; i < mem->SP; i++) {
+        sprintf(statusText, "%sS%d: 0x%04x\n", statusText, i, mem->stack[i]);
+    }
+
+    sprintf(statusText, "%sSP: 0x%x",statusText, mem->SP);
     textSurface = TTF_RenderText_Blended_Wrapped(terminus,
             statusText,
             textColor, 400);
@@ -199,7 +219,7 @@ void draw_sdl(chip8_mem* mem) {
     textTexture = SDL_CreateTextureFromSurface(status_renderer, textSurface);
 
     SDL_FreeSurface(textSurface);
-    SDL_RenderCopy(status_renderer, textTexture, NULL, NULL);
+    SDL_RenderCopy(status_renderer, textTexture, &textRect, &textRect);
     SDL_RenderPresent(status_renderer);
     SDL_DestroyTexture(textTexture);
 
@@ -229,7 +249,7 @@ void post_tick_sdl() {
 
     // Sleep for the remaining time per frame
     if (elapsedTime < MS_PER_TICK) {
-        usleep((MS_PER_TICK - elapsedTime) * 1000);
+        SDL_Delay(MS_PER_TICK - elapsedTime);
     }
 }
 

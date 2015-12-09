@@ -8,7 +8,7 @@ DEPS=memory.h cpu.h display_tty.h display_sdl.h
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 OBJS=main.o memory.o cpu.o display_tty.o display_sdl.o
-TESTOBJS=tests.o cpu.o memory.o
+TESTOBJS=tests.o cpu.o memory.o 
 
 all: chip8
 
