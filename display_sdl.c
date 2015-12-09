@@ -205,6 +205,7 @@ void draw_sdl(chip8_mem* mem) {
             mem->ST,
             mem->I
     );
+
     for (i = 0; i < mem->SP; i++) {
         sprintf(statusText, "%sS%d: 0x%04x\n", statusText, i, mem->stack[i]);
     }
